@@ -1,8 +1,12 @@
-DB_NAME: tasks
+HTTP_PORT: 8081
+
+DB_NAME: files
 DB_PASSWORD: password
 DB_USER: user
 
-METRICS_NAMESPACE: namespace
-METRICS_SUBSYSTEM: service
+METRICS_NAMESPACE: headless_todo
+METRICS_SUBSYSTEM: files
+
+LOCAL_STORAGE_PATH: ../tmp
 
 JWT_SECRET: xxx

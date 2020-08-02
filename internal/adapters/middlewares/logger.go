@@ -5,24 +5,24 @@ import (
 	"github.com/go-kit/kit/log"
 	"headless-todo-file-service/internal/entities"
 	"headless-todo-file-service/internal/services"
+	"io"
 	"time"
 )
 
 type LoggerMiddleware struct {
 	Logger log.Logger
-	Next   services.TasksService
+	Next   services.FilesService
 }
 
-func (l *LoggerMiddleware) Create(ctx context.Context, name, description, userId string) (output *entities.Task, err error) {
+func (l *LoggerMiddleware) Create(ctx context.Context, name, userId string, file io.Reader) (output *entities.File, err error) {
 	defer func(begin time.Time) {
 		_ = l.Logger.Log(
 			"method", "Create",
 			"name", name,
-			"description", description,
 			"userId", userId,
 			"err", err,
 			"took", time.Since(begin),
 		)
 	}(time.Now())
-	return l.Next.Create(ctx, name, description, userId)
+	return l.Next.Create(ctx, name, userId, file)
 }

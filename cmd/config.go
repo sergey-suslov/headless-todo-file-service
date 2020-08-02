@@ -6,6 +6,8 @@ import (
 )
 
 func initConfig() {
+	viper.SetDefault("HTTP_PORT", "8081")
+
 	viper.SetDefault("DB_NAME", "db")
 	viper.SetDefault("DB_PASSWORD", "password")
 	viper.SetDefault("DB_USER", "user")

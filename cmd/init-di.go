@@ -7,11 +7,13 @@ import (
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/dig"
+	file_manager "headless-todo-file-service/internal/adapters/file-manager"
 	"headless-todo-file-service/internal/adapters/middlewares"
 	"headless-todo-file-service/internal/adapters/repositories"
 	"headless-todo-file-service/internal/services"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 func handleError(err error) {
@@ -33,7 +35,12 @@ func Init(client *mongo.Client) *dig.Container {
 	})
 	handleError(err)
 
-	err = c.Provide(repositories.NewTasksRepositoryMongo)
+	err = c.Provide(func() repositories.FileManager {
+		return file_manager.NewFileManagerLocal(filepath.Join(filepath.Dir(".."), viper.GetString("LOCAL_STORAGE_PATH")))
+	})
+	handleError(err)
+
+	err = c.Provide(repositories.NewFilesRepositoryMongo)
 	handleError(err)
 
 	err = c.Provide(func() *middlewares.PrometheusMetrics {

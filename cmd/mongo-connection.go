@@ -28,7 +28,7 @@ func ConnectMongo() (*mongo.Client, func()) {
 		},
 		Options: nil,
 	}
-	_, err = database.Collection(repositories.TasksCollection).Indexes().CreateOne(ctx, userIdIndex)
+	_, err = database.Collection(repositories.FilesCollection).Indexes().CreateOne(ctx, userIdIndex)
 	if err != nil {
 		log.Fatal(err)
 	}
