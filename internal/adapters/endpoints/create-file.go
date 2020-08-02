@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/dig"
 	"headless-todo-file-service/internal/adapters/middlewares"
+	"headless-todo-file-service/internal/entities"
 	"headless-todo-file-service/internal/services"
 	"log"
 	"mime/multipart"
@@ -21,6 +22,15 @@ type createFileRequest struct {
 	File   multipart.File
 }
 
+type createFileResponse struct {
+	File entities.File `json:"file,omitempty"`
+	Err  error         `json:"error,omitempty"`
+}
+
+func (c createFileResponse) Error() error {
+	return c.Err
+}
+
 func (c *createFileRequest) SetUserClaim(claim UserClaim) {
 	c.UserClaim = claim
 }
@@ -28,11 +38,13 @@ func (c *createFileRequest) SetUserClaim(claim UserClaim) {
 func makeCreateFileEndpoint(service services.FilesService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(*createFileRequest)
-		task, err := service.Create(ctx, req.Name, req.UserClaim.ID, req.TaskId, req.File)
+		file, err := service.Create(ctx, req.Name, req.UserClaim.ID, req.TaskId, req.File)
 		if err != nil {
-			return nil, err
+			return createFileResponse{}, err
 		}
-		return task, nil
+		return createFileResponse{
+			File: *file,
+		}, nil
 	}
 }
 
@@ -72,5 +84,6 @@ func CreateFileHandler(c *dig.Container) http.Handler {
 			}, nil
 		}),
 		DefaultRequestEncoder,
+		GetDefaultHTTPOptions()...,
 	)
 }
