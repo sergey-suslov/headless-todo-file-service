@@ -16,8 +16,9 @@ import (
 
 type createFileRequest struct {
 	UserClaim
-	Name string `json:"name"`
-	File multipart.File
+	Name   string
+	TaskId string
+	File   multipart.File
 }
 
 func (c *createFileRequest) SetUserClaim(claim UserClaim) {
@@ -59,13 +60,15 @@ func CreateFileHandler(c *dig.Container) http.Handler {
 		DefaultRequestDecoder(func(r *http.Request) (UserClaimable, error) {
 			defer r.Body.Close()
 			fileName := r.FormValue("name")
+			taskId := r.FormValue("taskId")
 			taskFile, _, err := r.FormFile("file")
 			if err != nil && err != http.ErrMissingFile {
 				return nil, errors.Wrap(err, "manifest file")
 			}
 			return &createFileRequest{
-				Name: fileName,
-				File: taskFile,
+				Name:   fileName,
+				File:   taskFile,
+				TaskId: taskId,
 			}, nil
 		}),
 		DefaultRequestEncoder,
