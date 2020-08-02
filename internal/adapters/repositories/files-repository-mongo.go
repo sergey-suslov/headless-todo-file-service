@@ -45,3 +45,16 @@ func (r *FilesRepositoryMongo) Create(ctx context.Context, name, userId string, 
 
 	return &task, nil
 }
+func (r *FilesRepositoryMongo) Delete(ctx context.Context, fileId string) error {
+	hex, err := primitive.ObjectIDFromHex(fileId)
+	if err != nil {
+		return err
+	}
+	err = r.deleteFile(ctx, hex)
+	if err != nil {
+		return err
+	}
+	_ = r.fm.DeleteFile(fileId)
+
+	return err
+}

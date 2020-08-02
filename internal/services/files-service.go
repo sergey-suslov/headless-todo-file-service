@@ -37,7 +37,7 @@ func (service *filesService) Create(ctx context.Context, name, userId, tasksId s
 	}
 	err = service.tasksRepository.AddFileToTask(*createdFile, tasksId)
 	if err != nil {
-		// TODO delete file
+		_ = service.filesRepository.Delete(ctx, createdFile.ID.Hex())
 		return nil, err
 	}
 

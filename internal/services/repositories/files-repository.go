@@ -8,4 +8,5 @@ import (
 
 type FilesRepository interface {
 	Create(context.Context, string, string, io.Reader) (*entities.File, error)
+	Delete(context.Context, string) error
 }
