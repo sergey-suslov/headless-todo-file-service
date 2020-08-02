@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"encoding/json"
-	"github.com/nats-io/nats.go"
+	"github.com/nats-io/stan.go"
 	"headless-todo-file-service/internal/entities"
 	"headless-todo-file-service/internal/services/repositories"
 )
@@ -16,11 +16,11 @@ type addFileToTaskRequest struct {
 }
 
 type tasksRepositoryNats struct {
-	nc *nats.Conn
+	sc stan.Conn
 }
 
-func NewTasksRepositoryNats(nc *nats.Conn) repositories.TasksRepository {
-	return &tasksRepositoryNats{nc: nc}
+func NewTasksRepositoryNats(sc stan.Conn) repositories.TasksRepository {
+	return &tasksRepositoryNats{sc}
 }
 
 func (t *tasksRepositoryNats) AddFileToTask(file entities.File, taskId string) error {
@@ -29,7 +29,7 @@ func (t *tasksRepositoryNats) AddFileToTask(file entities.File, taskId string) e
 	if err != nil {
 		return err
 	}
-	err = t.nc.Publish(FileAddedSubjectName, req)
+	err = t.sc.Publish(FileAddedSubjectName, req)
 	if err != nil {
 		return err
 	}

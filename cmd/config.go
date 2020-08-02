@@ -18,6 +18,7 @@ func initConfig() {
 	viper.SetDefault("JWT_SECRET", "XXX")
 
 	viper.SetDefault("NATS_CONNECTION_STRING", "localhost:4222")
+	viper.SetDefault("NATS_CLUSTER_ID", "todo-cluster")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

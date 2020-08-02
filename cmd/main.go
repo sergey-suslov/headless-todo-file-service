@@ -13,13 +13,13 @@ func main() {
 	initConfig()
 
 	client, closeConnection := ConnectMongo()
-	nc, closeNats := ConnectNats()
+	nc, sc, closeNats := ConnectNats()
 	defer func() {
 		closeConnection()
 		closeNats()
 	}()
 
-	c := Init(client, nc)
+	c := Init(client, nc, sc)
 
 	http.Handle("/create-file", endpoints.CreateFileHandler(c))
 	http.Handle("/metrics", promhttp.Handler())
