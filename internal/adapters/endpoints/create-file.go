@@ -28,7 +28,7 @@ func (c *createFileRequest) SetUserClaim(claim UserClaim) {
 func makeCreateFileEndpoint(service services.FilesService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(*createFileRequest)
-		task, err := service.Create(ctx, req.Name, req.UserClaim.ID, req.File)
+		task, err := service.Create(ctx, req.Name, req.UserClaim.ID, req.TaskId, req.File)
 		if err != nil {
 			return nil, err
 		}

@@ -2,6 +2,7 @@ package file_manager
 
 import (
 	"bufio"
+	"headless-todo-file-service/internal/adapters/repositories"
 	"io"
 	"os"
 )
@@ -10,7 +11,7 @@ type FileManagerLocal struct {
 	pathToLocalStorage string
 }
 
-func NewFileManagerLocal(pathToLocalStorage string) *FileManagerLocal {
+func NewFileManagerLocal(pathToLocalStorage string) repositories.FileManager {
 	return &FileManagerLocal{pathToLocalStorage: pathToLocalStorage}
 }
 
@@ -37,4 +38,9 @@ func (f *FileManagerLocal) SaveFile(id string, file io.Reader) error {
 		return err
 	}
 	return nil
+}
+
+func (f *FileManagerLocal) DeleteFile(id string) error {
+	fileFullName := f.getFileFullName(id)
+	return os.Remove(fileFullName)
 }

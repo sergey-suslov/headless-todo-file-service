@@ -3,6 +3,8 @@ package main
 import (
 	kitlog "github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	"github.com/nats-io/nats.go"
+	"github.com/nats-io/stan.go"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,11 +24,21 @@ func handleError(err error) {
 	}
 }
 
-func Init(client *mongo.Client) *dig.Container {
+func Init(client *mongo.Client, nc *nats.Conn, sc stan.Conn) *dig.Container {
 	c := dig.New()
 
 	err := c.Provide(func() *mongo.Client {
 		return client
+	})
+	handleError(err)
+
+	err = c.Provide(func() *nats.Conn {
+		return nc
+	})
+	handleError(err)
+
+	err = c.Provide(func() stan.Conn {
+		return sc
 	})
 	handleError(err)
 
@@ -41,6 +53,9 @@ func Init(client *mongo.Client) *dig.Container {
 	handleError(err)
 
 	err = c.Provide(repositories.NewFilesRepositoryMongo)
+	handleError(err)
+
+	err = c.Provide(repositories.NewTasksRepositoryNats)
 	handleError(err)
 
 	err = c.Provide(func() *middlewares.PrometheusMetrics {
@@ -65,6 +80,9 @@ func Init(client *mongo.Client) *dig.Container {
 		}, []string{}) // no fields here
 		return middlewares.NewPrometheusMetrics(requestCount, requestLatency, countResult)
 	})
+
+	err = c.Provide(services.NewFilesServiceService)
+	handleError(err)
 
 	err = c.Provide(services.NewTasksService)
 	handleError(err)
