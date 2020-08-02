@@ -27,12 +27,12 @@ type InstrumentingMiddleware struct {
 	Next           services.FilesService
 }
 
-func (mw *InstrumentingMiddleware) Create(ctx context.Context, name, userId string, file io.Reader) (output *entities.File, err error) {
+func (mw *InstrumentingMiddleware) Create(ctx context.Context, name, userId, taskId string, file io.Reader) (output *entities.File, err error) {
 	defer func(begin time.Time) {
 		lvs := []string{"method", "Create", "error", fmt.Sprint(err != nil)}
 		mw.RequestCount.With(lvs...).Add(1)
 		mw.RequestLatency.With(lvs...).Observe(time.Since(begin).Seconds())
 	}(time.Now())
 
-	return mw.Next.Create(ctx, name, userId, file)
+	return mw.Next.Create(ctx, name, userId, taskId, file)
 }

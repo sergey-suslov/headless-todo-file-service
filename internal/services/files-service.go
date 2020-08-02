@@ -9,23 +9,37 @@ import (
 )
 
 type FilesService interface {
-	Create(ctx context.Context, name, userId string, file io.Reader) (*entities.File, error)
+	Create(ctx context.Context, name, userId, tasksId string, file io.Reader) (*entities.File, error)
 }
 
 type filesService struct {
-	tasksRepository repositories.FilesRepository
+	filesRepository repositories.FilesRepository
+	tasksRepository repositories.TasksRepository
 }
 
-func NewTasksService(tasksRepository repositories.FilesRepository) FilesService {
-	return &filesService{tasksRepository}
+func NewFilesServiceService(filesRepository repositories.FilesRepository, tasksRepository repositories.TasksRepository) FilesService {
+	return &filesService{filesRepository, tasksRepository}
 }
 
-func (service *filesService) Create(ctx context.Context, name, userId string, file io.Reader) (*entities.File, error) {
+func (service *filesService) Create(ctx context.Context, name, userId, tasksId string, file io.Reader) (*entities.File, error) {
+	if tasksId == "" {
+		return nil, errors.New("taskId must be present")
+	}
 	if name == "" {
 		return nil, errors.New("name must be present")
 	}
 	if userId == "" {
 		return nil, errors.New("userId must be present")
 	}
-	return service.tasksRepository.Create(ctx, name, userId, file)
+	createdFile, err := service.filesRepository.Create(ctx, name, userId, file)
+	if err != nil {
+		return nil, err
+	}
+	err = service.tasksRepository.AddFileToTask(*createdFile, tasksId)
+	if err != nil {
+		// TODO delete file
+		return nil, err
+	}
+
+	return createdFile, nil
 }

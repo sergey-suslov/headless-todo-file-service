@@ -14,7 +14,7 @@ type LoggerMiddleware struct {
 	Next   services.FilesService
 }
 
-func (l *LoggerMiddleware) Create(ctx context.Context, name, userId string, file io.Reader) (output *entities.File, err error) {
+func (l *LoggerMiddleware) Create(ctx context.Context, name, userId, taskId string, file io.Reader) (output *entities.File, err error) {
 	defer func(begin time.Time) {
 		_ = l.Logger.Log(
 			"method", "Create",
@@ -24,5 +24,5 @@ func (l *LoggerMiddleware) Create(ctx context.Context, name, userId string, file
 			"took", time.Since(begin),
 		)
 	}(time.Now())
-	return l.Next.Create(ctx, name, userId, file)
+	return l.Next.Create(ctx, name, userId, taskId, file)
 }

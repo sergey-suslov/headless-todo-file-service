@@ -1,10 +1,7 @@
 package repositories
 
-import (
-	"context"
-	"headless-todo-file-service/internal/entities"
-)
+import "headless-todo-file-service/internal/entities"
 
 type TasksRepository interface {
-	Create(context.Context, string, string, string) (*entities.Task, error)
+	AddFileToTask(file entities.File, taskId string) error
 }

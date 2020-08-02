@@ -14,7 +14,10 @@ func initConfig() {
 
 	viper.SetDefault("METRICS_NAMESPACE", "namespace")
 	viper.SetDefault("METRICS_SUBSYSTEM", "service")
+
 	viper.SetDefault("JWT_SECRET", "XXX")
+
+	viper.SetDefault("NATS_CONNECTION_STRING", "localhost:4222")
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

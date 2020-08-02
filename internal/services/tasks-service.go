@@ -1,14 +1,12 @@
 package services
 
 import (
-	"context"
-	"errors"
 	"headless-todo-file-service/internal/entities"
 	"headless-todo-file-service/internal/services/repositories"
 )
 
 type TasksService interface {
-	Create(ctx context.Context, name, description, userId string) (*entities.Task, error)
+	AddFileToTask(file entities.File, taskId string) error
 }
 
 type tasksService struct {
@@ -16,18 +14,9 @@ type tasksService struct {
 }
 
 func NewTasksService(tasksRepository repositories.TasksRepository) TasksService {
-	return &tasksService{tasksRepository}
+	return &tasksService{tasksRepository: tasksRepository}
 }
 
-func (service *tasksService) Create(ctx context.Context, name, description, userId string) (*entities.Task, error) {
-	if name == "" {
-		return nil, errors.New("name must be present")
-	}
-	if description == "" {
-		return nil, errors.New("description must be present")
-	}
-	if userId == "" {
-		return nil, errors.New("userId must be present")
-	}
-	return service.tasksRepository.Create(ctx, name, description, userId)
+func (t *tasksService) AddFileToTask(file entities.File, taskId string) error {
+	return t.tasksRepository.AddFileToTask(file, taskId)
 }
