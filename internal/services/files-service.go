@@ -31,6 +31,13 @@ func (service *filesService) Create(ctx context.Context, name, userId, tasksId s
 	if userId == "" {
 		return nil, errors.New("userId must be present")
 	}
+	taskById, err := service.tasksRepository.GetTaskById(ctx, tasksId)
+	if err != nil {
+		return nil, err
+	}
+	if taskById.UserId != userId {
+		return nil, errors.New("no task with the given id")
+	}
 	createdFile, err := service.filesRepository.Create(ctx, name, userId, file)
 	if err != nil {
 		return nil, err

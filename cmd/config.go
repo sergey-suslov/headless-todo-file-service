@@ -11,6 +11,7 @@ func initConfig() {
 	viper.SetDefault("DB_NAME", "db")
 	viper.SetDefault("DB_PASSWORD", "password")
 	viper.SetDefault("DB_USER", "user")
+	viper.SetDefault("DB_PORT", "27017")
 
 	viper.SetDefault("METRICS_NAMESPACE", "namespace")
 	viper.SetDefault("METRICS_SUBSYSTEM", "service")

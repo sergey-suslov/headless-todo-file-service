@@ -3,7 +3,7 @@ services:
   files-mongo:
     image: bitnami/mongodb:latest
     ports:
-    - 27017:27017
+    - 27018:27017
     environment:
       MONGODB_USERNAME: user
       MONGODB_DATABASE: files

@@ -12,7 +12,7 @@ type errorer interface {
 }
 
 func DefaultRequestEncoder(ctx context.Context, w http.ResponseWriter, response interface{}) error {
-	if err, ok := response.(errorer); ok && err != nil {
+	if err, ok := response.(errorer); ok && err.Error() != nil {
 		encodeError(ctx, err.Error(), w)
 		return nil
 	}

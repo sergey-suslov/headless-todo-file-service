@@ -3,6 +3,7 @@ HTTP_PORT: 8081
 DB_NAME: files
 DB_PASSWORD: password
 DB_USER: user
+DB_PORT: 27018
 
 METRICS_NAMESPACE: headless_todo
 METRICS_SUBSYSTEM: files

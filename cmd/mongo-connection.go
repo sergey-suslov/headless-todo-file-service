@@ -14,7 +14,7 @@ import (
 func ConnectMongo() (*mongo.Client, func()) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	connectionString := "mongodb://" + viper.GetString("DB_USER") + ":" + viper.GetString("DB_PASSWORD") + "@localhost:27017/" + viper.GetString("DB_NAME")
+	connectionString := "mongodb://" + viper.GetString("DB_USER") + ":" + viper.GetString("DB_PASSWORD") + "@localhost:" + viper.GetString("DB_PORT") + "/" + viper.GetString("DB_NAME")
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connectionString))
 	if err != nil {
 		log.Fatal(err)
