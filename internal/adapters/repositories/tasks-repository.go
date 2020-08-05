@@ -15,6 +15,8 @@ import (
 const FileAddedSubjectName = "tasks.files.added"
 const GetTaskByIdSubjectName = "tasks.getById"
 
+var DependencyServiceUnavailable = errors.New("dependency service is unavailable")
+
 type addFileToTaskRequest struct {
 	TaskId   string `json:"taskId"`
 	FileId   string `json:"fileId"`
@@ -64,7 +66,7 @@ func (t *tasksRepositoryNats) GetTaskById(ctx context.Context, taskId string) (*
 	case err := <-errs:
 		return nil, err
 	case <-ctx.Done():
-		return nil, errors.New("could not verify the task's owner")
+		return nil, DependencyServiceUnavailable
 	}
 }
 

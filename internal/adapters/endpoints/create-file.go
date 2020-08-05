@@ -42,7 +42,7 @@ func makeCreateFileEndpoint(service services.FilesService) endpoint.Endpoint {
 		req := request.(*createFileRequest)
 		file, err := service.Create(ctx, req.Name, req.UserClaim.ID, req.TaskId, req.File)
 		if err != nil {
-			return createFileResponse{}, err
+			return encodeResponseError(createFileResponse{Err: err})
 		}
 		return createFileResponse{
 			File: *file,
@@ -69,8 +69,7 @@ func CreateFileHandler(c *dig.Container) http.Handler {
 	service = &middlewares.LoggerMiddleware{Logger: kitlog.With(logger), Next: service}
 	taskEndpoint := makeCreateFileEndpoint(service)
 	breaker := circuitbreaker.Gobreaker(gobreaker.NewCircuitBreaker(gobreaker.Settings{
-		Name:        "Create-File",
-		MaxRequests: 100,
+		Name: "Create-File",
 		ReadyToTrip: func(counts gobreaker.Counts) bool {
 			failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
 			return counts.Requests >= 3 && failureRatio >= 0.6

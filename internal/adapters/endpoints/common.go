@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	kithttp "github.com/go-kit/kit/transport/http"
+	"headless-todo-file-service/internal/adapters/repositories"
 	"net/http"
 )
 
@@ -54,5 +55,15 @@ func encodeError(_ context.Context, err error, w http.ResponseWriter) {
 func GetDefaultHTTPOptions() []kithttp.ServerOption {
 	return []kithttp.ServerOption{
 		kithttp.ServerErrorEncoder(encodeError),
+	}
+}
+
+func encodeResponseError(errorer errorer) (errorer, error) {
+	switch errorer.Error() {
+	case repositories.DependencyServiceUnavailable:
+		return errorer, errorer.Error()
+	default:
+		return errorer, nil
+
 	}
 }
