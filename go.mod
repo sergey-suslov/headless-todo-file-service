@@ -9,6 +9,7 @@ require (
 	github.com/nats-io/stan.go v0.7.0
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.3.0
+	github.com/sony/gobreaker v0.4.1
 	github.com/spf13/viper v1.7.1
 	go.mongodb.org/mongo-driver v1.3.5
 	go.uber.org/dig v1.10.0

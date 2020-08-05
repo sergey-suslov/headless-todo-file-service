@@ -9,6 +9,7 @@ import (
 	"github.com/nats-io/stan.go"
 	"headless-todo-file-service/internal/entities"
 	"headless-todo-file-service/internal/services/repositories"
+	"time"
 )
 
 const FileAddedSubjectName = "tasks.files.added"
@@ -38,15 +39,33 @@ func (t *tasksRepositoryNats) GetTaskById(ctx context.Context, taskId string) (*
 
 		return task, nil
 	})
-	response, err := publisher.Endpoint()(ctx, getTaskByIdRequest{taskId})
-	if err != nil {
+	ctx, cancelFunc := context.WithTimeout(ctx, 5*time.Second)
+	defer cancelFunc()
+	errs := make(chan error)
+	tasks := make(chan entities.Task)
+
+	go func() {
+		response, err := publisher.Endpoint()(ctx, getTaskByIdRequest{taskId})
+		if err != nil {
+			errs <- err
+			return
+		}
+		task, ok := response.(entities.Task)
+		if !ok {
+			errs <- errors.New("wrong response structure")
+			return
+		}
+		tasks <- task
+	}()
+
+	select {
+	case task := <-tasks:
+		return &task, nil
+	case err := <-errs:
 		return nil, err
+	case <-ctx.Done():
+		return nil, errors.New("could not verify the task's owner")
 	}
-	task, ok := response.(entities.Task)
-	if !ok {
-		return nil, errors.New("wrong response structure")
-	}
-	return &task, nil
 }
 
 func NewTasksRepositoryNats(sc stan.Conn) repositories.TasksRepository {
